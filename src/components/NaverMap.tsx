@@ -45,7 +45,9 @@ export default function NaverMap({ latitude, longitude, address, houseName }: Na
           return;
         }
 
+        // 환경변수가 없으면 제공받은 클라이언트 ID 사용
         const clientId = process.env.NEXT_PUBLIC_NAVER_MAP_CLIENT_ID || '586jpp38sz';
+        console.log('사용 중인 네이버 지도 클라이언트 ID:', clientId);
         const scriptId = 'naver-maps-api-script';
         
         // 기존 스크립트가 있는지 확인
