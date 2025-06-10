@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* React Calendar CSS */
+@import 'react-calendar/dist/Calendar.css';
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+}
+
+/* 캘린더 커스텀 스타일 */
+.react-calendar {
+  @apply w-full max-w-none bg-white border border-gray-300 font-sans;
+}
+
+.react-calendar__tile {
+  @apply p-2 text-center relative;
+}
+
+.react-calendar__tile--active {
+  @apply bg-blue-500 text-white;
+}
+
+.react-calendar__tile--now {
+  @apply bg-yellow-100;
+}
+
+.calendar-event {
+  @apply absolute bottom-0 left-0 right-0 text-xs bg-blue-500 text-white rounded-sm p-1;
+} 
