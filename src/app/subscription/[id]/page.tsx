@@ -2,8 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { useSession } from 'next-auth/react';
-import { subscriptionApi } from '@/lib/api';
 import { Subscription } from '@/types/subscription';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale/ko';
@@ -13,22 +11,15 @@ import LoanCalculator from '@/components/LoanCalculator';
 export default function SubscriptionDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const { data: session, status } = useSession();
   const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'info' | 'map' | 'calculator'>('info');
 
   useEffect(() => {
-    // 테스트용: 인증 체크 비활성화 (개발 중)
-    // if (status === 'unauthenticated') {
-    //   router.push('/');
-    //   return;
-    // }
-
     if (params.id) {
       loadSubscriptionDetail(params.id as string);
     }
-  }, [params.id, router]);
+  }, [params.id]);
 
   const loadSubscriptionDetail = async (id: string) => {
     try {
@@ -83,7 +74,7 @@ export default function SubscriptionDetailPage() {
     return (price / 100000000).toFixed(1) + '억원';
   };
 
-  if (status === 'loading' || loading) {
+  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-xl">로딩 중...</div>

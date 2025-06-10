@@ -1,15 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
-import { subscriptionApi } from '@/lib/api';
 import { Subscription, CalendarData } from '@/types/subscription';
 import TodaySubscriptions from '@/components/TodaySubscriptions';
 import MonthlyCalendar from '@/components/MonthlyCalendar';
 
 export default function MainPage() {
-  const { data: session, status } = useSession();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'today' | 'monthly'>('today');
   const [todaySubscriptions, setTodaySubscriptions] = useState<Subscription[]>([]);
@@ -29,35 +26,35 @@ export default function MainPage() {
 
   useEffect(() => {
     if (!isClient) return;
-    
-    // 테스트용: 인증 체크 비활성화 (개발 중)
-    // if (status === 'unauthenticated') {
-    //   router.push('/');
-    //   return;
-    // }
-
-    // 데이터는 항상 로드
     loadData();
-  }, [isClient, status, router]);
+  }, [isClient]);
 
   const loadData = async () => {
     try {
       setLoading(true);
       
       // 오늘의 청약 정보 로드
-      const today = await subscriptionApi.getTodaySubscriptions();
-      setTodaySubscriptions(today);
+      const response = await fetch('/api/subscriptions/today');
+      if (response.ok) {
+        const today = await response.json();
+        setTodaySubscriptions(today);
+      } else {
+        console.error('Failed to load today subscriptions');
+        setTodaySubscriptions([]);
+      }
 
       // 현재 월의 캘린더 데이터 로드
       const now = new Date();
-      const calendar = await subscriptionApi.getCalendarData(
-        now.getFullYear(),
-        now.getMonth() + 1
-      );
-      setCalendarData(calendar);
+      const calendarResponse = await fetch(`/api/subscriptions/calendar?year=${now.getFullYear()}&month=${now.getMonth() + 1}`);
+      if (calendarResponse.ok) {
+        const calendar = await calendarResponse.json();
+        setCalendarData(calendar);
+      } else {
+        console.error('Failed to load calendar data');
+        setCalendarData({});
+      }
     } catch (error) {
       console.error('데이터 로드 실패:', error);
-      // 개발 중에는 더미 데이터 사용
       setTodaySubscriptions([]);
       setCalendarData({});
     } finally {
@@ -142,7 +139,7 @@ export default function MainPage() {
                 오늘의 청약 정보
               </h1>
               <p className="text-gray-600">
-                안녕하세요, {session?.user?.name || '테스트 사용자'}님! 오늘의 청약 정보를 확인하세요.
+                안녕하세요! 오늘의 청약 정보를 확인하세요.
               </p>
             </div>
             <button
