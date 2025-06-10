@@ -16,12 +16,17 @@ export async function POST() {
 
     // 1. 청약홈 공공데이터 API 체크
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+      
       const cheongyakResponse = await fetch('http://openapi.reb.or.kr/OpenAPI_ToolInstallPackage/service/rest/ApplyhomeInfoDetailSvc/getAPTLttotPblancDetail', {
         headers: {
           'Accept': 'application/json',
         },
-        timeout: 10000
+        signal: controller.signal
       });
+      
+      clearTimeout(timeoutId);
       
       if (cheongyakResponse.ok) {
         apiChecks[0].status = 'success';
@@ -37,12 +42,17 @@ export async function POST() {
 
     // 2. LH API 체크
     try {
+      const controller2 = new AbortController();
+      const timeoutId2 = setTimeout(() => controller2.abort(), 10000);
+      
       const lhResponse = await fetch('http://openapi.lh.or.kr/rest/APTLttotPblancDetailService', {
         headers: {
           'Accept': 'application/json',
         },
-        timeout: 10000
+        signal: controller2.signal
       });
+      
+      clearTimeout(timeoutId2);
       
       if (lhResponse.ok) {
         apiChecks[1].status = 'success';
