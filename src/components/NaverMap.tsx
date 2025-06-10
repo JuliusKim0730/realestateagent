@@ -28,12 +28,15 @@ export default function NaverMap({ latitude, longitude, address, houseName }: Na
     if (typeof window !== 'undefined') {
       (window as any).navermap_authFailure = function() {
         console.error('네이버 지도 API 인증 실패');
-        setMapError('네이버 지도 API 인증에 실패했습니다. 클라이언트 키를 확인해주세요.');
+        console.error('도메인 허용 목록에 다음 도메인이 추가되어야 합니다:', window.location.hostname);
+        setMapError(`네이버 지도 API 인증 실패: 도메인 '${window.location.hostname}'이 허용 목록에 없습니다. 네이버 클라우드 플랫폼에서 도메인을 추가해주세요.`);
       };
       
       // 추가 디버깅 정보
       console.log('네이버 지도 API 초기화 시작');
       console.log('Client ID:', process.env.NEXT_PUBLIC_NAVER_MAP_CLIENT_ID || '586jpp38sz');
+      console.log('현재 도메인:', window.location.hostname);
+      console.log('네이버 클라우드 플랫폼에서 이 도메인이 허용되어야 합니다.');
     }
 
     // 네이버 클라우드 플랫폼 Maps API 스크립트 로드
@@ -48,6 +51,8 @@ export default function NaverMap({ latitude, longitude, address, houseName }: Na
         // 환경변수가 없으면 제공받은 클라이언트 ID 사용
         const clientId = process.env.NEXT_PUBLIC_NAVER_MAP_CLIENT_ID || '586jpp38sz';
         console.log('사용 중인 네이버 지도 클라이언트 ID:', clientId);
+        console.log('현재 도메인:', window.location.hostname);
+        console.log('현재 URL:', window.location.href);
         const scriptId = 'naver-maps-api-script';
         
         // 기존 스크립트가 있는지 확인
@@ -75,8 +80,9 @@ export default function NaverMap({ latitude, longitude, address, houseName }: Na
 
         const script = document.createElement('script');
         script.id = scriptId;
-        // 네이버 클라우드 플랫폼 최신 API 규격 사용
-        script.src = `https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=${clientId}`;
+        // 네이버 클라우드 플랫폼 최신 API 규격 사용 + 캐시 버스팅
+        const timestamp = Date.now();
+        script.src = `https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=${clientId}&callback=&timestamp=${timestamp}`;
         script.async = true;
         
         console.log('네이버 지도 스크립트 로드 시작:', script.src);
