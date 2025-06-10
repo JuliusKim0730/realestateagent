@@ -75,7 +75,8 @@ export default function NaverMap({ latitude, longitude, address, houseName }: Na
 
         const script = document.createElement('script');
         script.id = scriptId;
-        script.src = `https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=${clientId}`;
+        // 네이버 클라우드 플랫폼 최신 API 규격 사용
+        script.src = `https://oapi.map.naver.com/openapi/v3/maps.js?ncpClientId=${clientId}`;
         script.async = true;
         
         console.log('네이버 지도 스크립트 로드 시작:', script.src);
